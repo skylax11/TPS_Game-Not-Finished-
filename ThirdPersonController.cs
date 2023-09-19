@@ -218,7 +218,15 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            float targetSpeed = (_input.sprint && UI_Manager.instance.stamina.fillAmount > 0f) ? SprintSpeed : MoveSpeed;
+            if (_input.sprint)
+            {
+                UI_Manager.instance.decreaseStamina();
+            }
+            else
+            {
+                UI_Manager.instance.increaseStamina();
+            }
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -406,5 +414,6 @@ namespace StarterAssets
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
         }
+        
     }
 }

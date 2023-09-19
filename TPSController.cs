@@ -33,14 +33,21 @@ public class TPSController : MonoBehaviour
 
 
     [Header("Weapon")]
-    [SerializeField] float fireFreq = 0.15f;
+    [SerializeField] public float fireFreq = 0.15f;
+    [SerializeField] public int _ammo;
+    [SerializeField] public int _maganize;
+
     float fireCounter;
     public bool canShoot;
     [Header("Singleton")]
     public static TPSController instance;
+    [Header("Object Pool")]
+    public Queue bullets;
+    bool didReachMax = false;
 
     private void Awake()
     {
+        bullets = new Queue();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -92,7 +99,8 @@ public class TPSController : MonoBehaviour
             }
 
         }
-        if (starterAssetsInputs.shoot && canShoot)
+
+        if ((starterAssetsInputs.shoot && canShoot) && Inventory.instance.current_item.weapon_data._currentAmmo > 0)
         {
             ShootVirtualCam.gameObject.SetActive(true);
             Vector3 worldAimTarget = mouseWorldPos;
@@ -109,7 +117,47 @@ public class TPSController : MonoBehaviour
             Vector3 aimDir = (mouseWorldPos - spawnBulletTransform.position).normalized;
             if (Time.time > fireCounter)
             {
-                Instantiate(pjBulletTransform, spawnBulletTransform.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                Inventory.instance.current_item.weapon_data._currentAmmo--;
+                // OBJECT POOLING
+                if (bullets.Count < 30 && !didReachMax)
+                {
+                    Transform bullet = Instantiate(pjBulletTransform, spawnBulletTransform.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                    bullets.Enqueue(bullet);
+                }
+                else
+                {
+                    didReachMax = true;
+                    Transform _bullet = bullets.Peek() as Transform;
+                    if (_bullet.gameObject.active == false)
+                    {
+                        _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
+                        _bullet.transform.position = spawnBulletTransform.position;
+                        _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
+                        _bullet.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        do
+                        {
+                            Transform _oldBullet = bullets.Dequeue() as Transform;
+                            _bullet = bullets.Peek() as Transform;
+
+                            _oldBullet.gameObject.SetActive(false);
+                            bullets.Enqueue(_oldBullet);
+
+                            if (_bullet.gameObject.active == false)
+                            {
+                                _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
+                                _bullet.transform.position = spawnBulletTransform.position;
+                                _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
+                                _bullet.gameObject.SetActive(true);
+                                break;
+                            }
+                        }
+                        while (_bullet.gameObject.active == true);
+                    }
+                }
+                UI_Manager.instance.reflectAmmo();
                 fireCounter = fireFreq + Time.time;
             }
         }

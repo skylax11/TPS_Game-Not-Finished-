@@ -14,5 +14,6 @@ public class ItemInfo : ScriptableObject
     public Vector3 parent_Pos;
     public Quaternion item_Rot;
     public Quaternion parent_Rot;
-
+    public Vector3 leftHint;
+    public Vector3 rightHint;
 }
