@@ -16,4 +16,6 @@ public class ItemInfo : ScriptableObject
     public Quaternion parent_Rot;
     public Vector3 leftHint;
     public Vector3 rightHint;
+    public AudioClip _reloadClip;
+    public AudioClip _shotClip;
 }

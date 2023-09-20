@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Cinemachine;
 using StarterAssets;
 using System.Collections;
@@ -8,15 +9,15 @@ using UnityEngine.InputSystem;
 
 public class TPSController : MonoBehaviour
 {
-    [SerializeField] private CinemachineVirtualCamera aimVirtualCam;
-    [SerializeField] private CinemachineVirtualCamera ShootVirtualCam;
+    [SerializeField] public CinemachineVirtualCamera aimVirtualCam;
+    [SerializeField] public CinemachineVirtualCamera ShootVirtualCam;
     [SerializeField] private float aimSens;
     [SerializeField] private float normalSens;
     private ThirdPersonController tps;
     private StarterAssetsInputs starterAssetsInputs;
     [SerializeField] LayerMask aimColliderMask = new LayerMask();
     [SerializeField] public Transform debugTransform;
-    [SerializeField] private Transform pjBulletTransform;
+    [SerializeField] public Transform pjBulletTransform;
     [SerializeField] public Transform spawnBulletTransform;
     [Header("Rigging")]
     [SerializeField] public RigBuilder _rigBuilder;
@@ -37,13 +38,13 @@ public class TPSController : MonoBehaviour
     [SerializeField] public int _ammo;
     [SerializeField] public int _maganize;
 
-    float fireCounter;
+    public float fireCounter;
     public bool canShoot;
     [Header("Singleton")]
     public static TPSController instance;
     [Header("Object Pool")]
     public Queue bullets;
-    bool didReachMax = false;
+    public bool didReachMax = false;
 
     private void Awake()
     {
@@ -63,6 +64,8 @@ public class TPSController : MonoBehaviour
     }
     private void Update()
     {
+        SlotItemInfos _currentItem = Inventory.instance.current_item; 
+
         Vector3 mouseWorldPos = Vector3.zero;
 
         Vector2 centerPoint = new Vector2(Screen.width / 2f , Screen.height / 2f);
@@ -100,7 +103,7 @@ public class TPSController : MonoBehaviour
 
         }
 
-        if ((starterAssetsInputs.shoot && canShoot) && Inventory.instance.current_item.weapon_data._currentAmmo > 0)
+        if ((starterAssetsInputs.shoot && canShoot) && _currentItem.weapon_data._currentAmmo > 0)
         {
             ShootVirtualCam.gameObject.SetActive(true);
             Vector3 worldAimTarget = mouseWorldPos;
@@ -114,52 +117,8 @@ public class TPSController : MonoBehaviour
                 ShootingRig.weight += Time.deltaTime * 10f;
                 if(ShootingRig.weight ==1) { break; }
             }
-            Vector3 aimDir = (mouseWorldPos - spawnBulletTransform.position).normalized;
-            if (Time.time > fireCounter)
-            {
-                Inventory.instance.current_item.weapon_data._currentAmmo--;
-                // OBJECT POOLING
-                if (bullets.Count < 30 && !didReachMax)
-                {
-                    Transform bullet = Instantiate(pjBulletTransform, spawnBulletTransform.position, Quaternion.LookRotation(aimDir, Vector3.up));
-                    bullets.Enqueue(bullet);
-                }
-                else
-                {
-                    didReachMax = true;
-                    Transform _bullet = bullets.Peek() as Transform;
-                    if (_bullet.gameObject.active == false)
-                    {
-                        _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
-                        _bullet.transform.position = spawnBulletTransform.position;
-                        _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
-                        _bullet.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        do
-                        {
-                            Transform _oldBullet = bullets.Dequeue() as Transform;
-                            _bullet = bullets.Peek() as Transform;
 
-                            _oldBullet.gameObject.SetActive(false);
-                            bullets.Enqueue(_oldBullet);
-
-                            if (_bullet.gameObject.active == false)
-                            {
-                                _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
-                                _bullet.transform.position = spawnBulletTransform.position;
-                                _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
-                                _bullet.gameObject.SetActive(true);
-                                break;
-                            }
-                        }
-                        while (_bullet.gameObject.active == true);
-                    }
-                }
-                UI_Manager.instance.reflectAmmo();
-                fireCounter = fireFreq + Time.time;
-            }
+            _currentItem.the_item.GetComponent<IWeapon>().Shot(_currentItem.the_item.GetComponent<IWeapon>(),mouseWorldPos,spawnBulletTransform);
         }
         else
         {

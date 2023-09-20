@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -99,7 +100,8 @@ namespace Assets.Scripts
             All_Items[id].right = item.right;
             All_Items[id].leftHint = item.info.leftHint;
             All_Items[id].rightHint = item.info.rightHint;
-
+            All_Items[id]._reloadClip = item.info._reloadClip;
+            All_Items[id]._shotClip = item.info._shotClip;
 
             Inventory.instance.slot_Images[id].GetComponent<Image>().sprite = All_Items[id].image_2d;
             Inventory.instance.current_item = All_Items[id];
@@ -132,23 +134,67 @@ namespace Assets.Scripts
         #endregion
         public void swapWeapons()
         {
-            TPSController.instance.fireFreq = Inventory.instance.current_item.the_item.GetComponent<IWeapon>()._fireFreq;
-            TPSController.instance._maganize = Inventory.instance.current_item.the_item.GetComponent<IWeapon>()._magazineAmmo;
-            TPSController.instance._ammo = Inventory.instance.current_item.the_item.GetComponent<IWeapon>()._ammo;
-            TPSController.instance.spawnBulletTransform = Inventory.instance.current_item.the_item.GetComponent<WeaponComponent>().bulletTransform;
-            
             UI_Manager.instance.reflectAmmo();
+        }
+        public void Shot(IWeapon data,Vector3 mouseWorldPos,Transform spawnBulletTransform)
+        {
+            TPSController _tps = TPSController.instance;
+            Queue bullets = _tps.bullets;
+            Vector3 aimDir = (mouseWorldPos - spawnBulletTransform.position).normalized;
+            if (Time.time > _tps.fireCounter)
+            {
+                Sound_Manager.instance.SetClip(Inventory.instance.current_item._shotClip);
+                data._currentAmmo--;
 
+                // OBJECT POOLING
+                if (bullets.Count < 30 && !_tps.didReachMax)
+                {
+                    Transform bullet = Instantiate(_tps.pjBulletTransform, _tps.spawnBulletTransform.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                    bullets.Enqueue(bullet);
+                }
+                else
+                {
+                    _tps.didReachMax = true;
+                    Transform _bullet = bullets.Peek() as Transform;
+                    if (_bullet.gameObject.active == false)
+                    {
+                        _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
+                        _bullet.transform.position = _tps.spawnBulletTransform.position;
+                        _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
+                        _bullet.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        do
+                        {
+                            Transform _oldBullet = bullets.Dequeue() as Transform;
+                            _bullet = bullets.Peek() as Transform;
+
+                            _oldBullet.gameObject.SetActive(false);
+                            bullets.Enqueue(_oldBullet);
+
+                            if (_bullet.gameObject.active == false)
+                            {
+                                _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
+                                _bullet.transform.position = _tps.spawnBulletTransform.position;
+                                _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
+                                _bullet.gameObject.SetActive(true);
+                                break;
+                            }
+                        }
+                        while (_bullet.gameObject.active == true);
+                    }
+                }
+
+                UI_Manager.instance.reflectAmmo();
+                _tps.fireCounter = data._fireFreq + Time.time;
+            }
         }
         public void Reload(IWeapon data)
         {
             Inventory.instance.current_item.the_item.GetComponent<Animator>().SetBool("reload", true);
-
+            Sound_Manager.instance.SetClip(Inventory.instance.current_item._reloadClip);
             int diff = data._ammo - data._currentAmmo;
-
-            print(data._magazineAmmo);
-            print(diff);
-
             data._currentAmmo = data._magazineAmmo > diff ? data._ammo : data._currentAmmo+data._magazineAmmo;
             data._magazineAmmo = data._magazineAmmo > diff ? data._magazineAmmo-diff : 0 ;
             UI_Manager.instance.reflectAmmo();
@@ -157,6 +203,11 @@ namespace Assets.Scripts
         public void SetReloadAnimation_False()
         {
             Inventory.instance.current_item.the_item.GetComponent<Animator>().SetBool("reload", false);
+            TPSController.instance.canShoot = true;
+        }
+        public void SetShotAnimation_False()
+        {
+            Inventory.instance.current_item.the_item.GetComponent<Animator>().SetBool("shot", false);
         }
     }
 }

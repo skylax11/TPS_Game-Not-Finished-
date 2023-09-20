@@ -187,7 +187,8 @@ public class SlotItemInfos
     public Vector3 item_Pos;
     public Quaternion item_Rot;
     public IWeapon weapon_data;
-
+    public AudioClip _reloadClip;
+    public AudioClip _shotClip;
     public SlotItemInfos(int index)
     {
         name = "Slot" + (index + 1);

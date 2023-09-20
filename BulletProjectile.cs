@@ -11,7 +11,7 @@ public class BulletProjectile : MonoBehaviour
     }
     private void Start()
     {
-        float speed = 100f;
+        float speed = 120f;
         rb.velocity = transform.forward * speed;
         StartCoroutine("callBack");
     }
@@ -29,7 +29,7 @@ public class BulletProjectile : MonoBehaviour
     public void resetVelo()
     {
         rb.velocity = Vector3.zero;
-        float speed = 100f;
+        float speed = 120f;
         rb.velocity = transform.forward * speed;
     }
 }
