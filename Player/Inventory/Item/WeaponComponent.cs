@@ -77,15 +77,15 @@ namespace Assets.Scripts
             if (item.right != null)
             {
                 TPSController.instance.HandRig.GetComponentsInChildren<TwoBoneIKConstraint>()[0].data.target = item.right.transform;
-                TPSController.instance._rightHint.transform.localPosition = item.info.rightHint;
+                TPSController.instance.RightHint.transform.localPosition = item.info.rightHint;
             }
             if (item.left != null)
             {
                 TPSController.instance.HandRig.GetComponentsInChildren<TwoBoneIKConstraint>()[1].data.target = item.left.transform;
-                TPSController.instance._leftHint.transform.localPosition = item.info.leftHint;
+                TPSController.instance.LeftHint.transform.localPosition = item.info.leftHint;
             }
 
-            TPSController.instance.spawnBulletTransform = item.bulletTransform;
+            TPSController.instance.SpawnBulletTransform = item.bulletTransform;
 
             All_Items[id].image_2d = item.info.image_2d;
             All_Items[id].name = item.info.name;
@@ -125,10 +125,10 @@ namespace Assets.Scripts
 
                 Inventory.instance.SetRigDetails(item.weapon_rotation, item.pos_offset);
 
-                TPSController.instance.aiming = item.aim;
+                TPSController.instance.Aiming = item.aim;
                 TPSController.instance.PoseRig.weight = 1f;
                 TPSController.instance.HandRig.weight = 1f;
-                TPSController.instance.canShoot = true;
+                TPSController.instance.CanShoot = true;
             }
         }
         #endregion
@@ -139,55 +139,19 @@ namespace Assets.Scripts
         public void Shot(IWeapon data,Vector3 mouseWorldPos,Transform spawnBulletTransform)
         {
             TPSController _tps = TPSController.instance;
-            Queue bullets = _tps.bullets;
+            Queue bullets = _tps.Bullets;
             Vector3 aimDir = (mouseWorldPos - spawnBulletTransform.position).normalized;
-            if (Time.time > _tps.fireCounter)
+            if (Time.time > _tps.FireCounter)
             {
                 Sound_Manager.instance.SetClip(Inventory.instance.current_item._shotClip);
                 data._currentAmmo--;
 
                 // OBJECT POOLING
-                if (bullets.Count < 30 && !_tps.didReachMax)
-                {
-                    Transform bullet = Instantiate(_tps.pjBulletTransform, _tps.spawnBulletTransform.position, Quaternion.LookRotation(aimDir, Vector3.up));
-                    bullets.Enqueue(bullet);
-                }
-                else
-                {
-                    _tps.didReachMax = true;
-                    Transform _bullet = bullets.Peek() as Transform;
-                    if (_bullet.gameObject.active == false)
-                    {
-                        _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
-                        _bullet.transform.position = _tps.spawnBulletTransform.position;
-                        _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
-                        _bullet.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        do
-                        {
-                            Transform _oldBullet = bullets.Dequeue() as Transform;
-                            _bullet = bullets.Peek() as Transform;
-
-                            _oldBullet.gameObject.SetActive(false);
-                            bullets.Enqueue(_oldBullet);
-
-                            if (_bullet.gameObject.active == false)
-                            {
-                                _bullet.transform.rotation = Quaternion.LookRotation(aimDir, Vector3.up);
-                                _bullet.transform.position = _tps.spawnBulletTransform.position;
-                                _bullet.transform.GetComponent<BulletProjectile>().resetVelo();
-                                _bullet.gameObject.SetActive(true);
-                                break;
-                            }
-                        }
-                        while (_bullet.gameObject.active == true);
-                    }
-                }
+                
+                ObjectPooling.ObjectPooling.instance.do_ObjectPooling(bullets,mouseWorldPos,spawnBulletTransform);
 
                 UI_Manager.instance.reflectAmmo();
-                _tps.fireCounter = data._fireFreq + Time.time;
+                _tps.FireCounter = data._fireFreq + Time.time;
             }
         }
         public void Reload(IWeapon data)
@@ -203,7 +167,7 @@ namespace Assets.Scripts
         public void SetReloadAnimation_False()
         {
             Inventory.instance.current_item.the_item.GetComponent<Animator>().SetBool("reload", false);
-            TPSController.instance.canShoot = true;
+            TPSController.instance.CanShoot = true;
         }
         public void SetShotAnimation_False()
         {

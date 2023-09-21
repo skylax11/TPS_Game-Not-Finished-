@@ -9,50 +9,50 @@ using UnityEngine.InputSystem;
 
 public class TPSController : MonoBehaviour
 {
-    [SerializeField] public CinemachineVirtualCamera aimVirtualCam;
-    [SerializeField] public CinemachineVirtualCamera ShootVirtualCam;
+    public CinemachineVirtualCamera AimVirtualCam;
+    public CinemachineVirtualCamera ShootVirtualCam;
     [SerializeField] private float aimSens;
     [SerializeField] private float normalSens;
     private ThirdPersonController tps;
     private StarterAssetsInputs starterAssetsInputs;
     [SerializeField] LayerMask aimColliderMask = new LayerMask();
-    [SerializeField] public Transform debugTransform;
-    [SerializeField] public Transform pjBulletTransform;
-    [SerializeField] public Transform spawnBulletTransform;
+    public Transform DebugTransform;
+    public Transform PjBulletTransform;
+    public Transform SpawnBulletTransform;
     [Header("Rigging")]
-    [SerializeField] public RigBuilder _rigBuilder;
-    [SerializeField] public Rig aimRig;
-    [SerializeField] public Rig ShootingRig;
-    [SerializeField] public Rig PoseRig;
-    [SerializeField] public Rig HandRig;
-    [SerializeField] public TwoBoneIKConstraint[] position_aiming_shooting_Bone;
-    [SerializeField] public MultiParentConstraint[] position_aiming_shooting_Parent;
-    [SerializeField] public MultiAimConstraint aiming;
-    [SerializeField] public MultiPositionConstraint[] position_aiming_shooting_Pos;
-    [SerializeField] public GameObject _leftHint;
-    [SerializeField] public GameObject _rightHint;
+    public RigBuilder _rigBuilder;
+    public Rig AimRig;
+    public Rig ShootingRig;
+    public Rig PoseRig;
+    public Rig HandRig;
+    public TwoBoneIKConstraint[] Position_aiming_shooting_Bone;
+    public MultiParentConstraint[] Position_aiming_shooting_Parent;
+    public MultiAimConstraint Aiming;
+    public MultiPositionConstraint[] Position_aiming_shooting_Pos;
+    public GameObject LeftHint;
+    public GameObject RightHint;
 
 
     [Header("Weapon")]
-    [SerializeField] public float fireFreq = 0.15f;
-    [SerializeField] public int _ammo;
-    [SerializeField] public int _maganize;
+    public float FireFreq = 0.15f;
+    public int Ammo;
+    public int Maganize;
 
-    public float fireCounter;
-    public bool canShoot;
+    public float FireCounter;
+    public bool CanShoot;
     [Header("Singleton")]
     public static TPSController instance;
     [Header("Object Pool")]
-    public Queue bullets;
-    public bool didReachMax = false;
+    public Queue Bullets;
+    public bool DidReachMax = false;
 
     private void Awake()
     {
-        bullets = new Queue();
+        Bullets = new Queue();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        canShoot = false;
+        CanShoot = false;
 
         if (instance == null)
         {
@@ -74,16 +74,16 @@ public class TPSController : MonoBehaviour
         
         if (Physics.Raycast(ray, out RaycastHit raycastHit, 500f, aimColliderMask))
         {
-            debugTransform.position = raycastHit.point;
+            DebugTransform.position = raycastHit.point;
             mouseWorldPos = raycastHit.point;
         }
-        if (starterAssetsInputs.aim && canShoot)
+        if (starterAssetsInputs.aim && CanShoot)
         {
-            aimVirtualCam.gameObject.SetActive(true); tps.SetSens(aimSens);
+            AimVirtualCam.gameObject.SetActive(true); tps.SetSens(aimSens);
             tps.setRotateMove(false);
 
             PoseRig.weight += Time.deltaTime*20f;
-            aimRig.weight += Time.deltaTime * 10f;
+            AimRig.weight += Time.deltaTime * 10f;
 
 
             Vector3 worldAimTarget = mouseWorldPos;
@@ -93,17 +93,17 @@ public class TPSController : MonoBehaviour
         }
         else
         {
-            aimVirtualCam.gameObject.SetActive(false); tps.SetSens(normalSens);
+            AimVirtualCam.gameObject.SetActive(false); tps.SetSens(normalSens);
             tps.setRotateMove(true);
-            if (canShoot)
+            if (CanShoot)
             {
-                aimRig.weight -= Time.deltaTime * 10f;
+                AimRig.weight -= Time.deltaTime * 10f;
                 PoseRig.weight += Time.deltaTime * 20f;
             }
 
         }
 
-        if ((starterAssetsInputs.shoot && canShoot) && _currentItem.weapon_data._currentAmmo > 0)
+        if ((starterAssetsInputs.shoot && CanShoot) && _currentItem.weapon_data._currentAmmo > 0)
         {
             ShootVirtualCam.gameObject.SetActive(true);
             Vector3 worldAimTarget = mouseWorldPos;
@@ -118,12 +118,12 @@ public class TPSController : MonoBehaviour
                 if(ShootingRig.weight ==1) { break; }
             }
 
-            _currentItem.the_item.GetComponent<IWeapon>().Shot(_currentItem.the_item.GetComponent<IWeapon>(),mouseWorldPos,spawnBulletTransform);
+            _currentItem.the_item.GetComponent<IWeapon>().Shot(_currentItem.the_item.GetComponent<IWeapon>(),mouseWorldPos,SpawnBulletTransform);
         }
         else
         {
             ShootVirtualCam.gameObject.SetActive(false);
-            if (canShoot)
+            if (CanShoot)
             {
                 ShootingRig.weight -= Time.deltaTime * 3f;
                 PoseRig.weight += Time.deltaTime * 5f;

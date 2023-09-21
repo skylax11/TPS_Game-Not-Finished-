@@ -7,10 +7,10 @@ using UnityEngine.UI;
 
 public class UI_Manager : MonoBehaviour
 {
-    [SerializeField] public Image health;
-    [SerializeField] public Image stamina;
-    [SerializeField] public TextMeshProUGUI ammo;
-    [SerializeField] public TextMeshProUGUI magazine;
+    public Image Health;
+    public Image Stamina;
+    public TextMeshProUGUI Ammo;
+    public TextMeshProUGUI Magazine;
 
     // Singleton
 
@@ -34,23 +34,23 @@ public class UI_Manager : MonoBehaviour
     }
     public void decreaseStamina()
     {
-        stamina.fillAmount -= Time.deltaTime*0.24f;
+        Stamina.fillAmount -= Time.deltaTime*0.24f;
     }
     public void increaseStamina()
     {
-        stamina.fillAmount += Time.deltaTime * 0.08f;
+        Stamina.fillAmount += Time.deltaTime * 0.08f;
     }
     public void reflectAmmo()
     {
         if (Inventory.instance.current_item.weapon_data != null)
         {
-            ammo.text = Inventory.instance.current_item.weapon_data._currentAmmo.ToString();
-            magazine.text = Inventory.instance.current_item.weapon_data._magazineAmmo.ToString();
+            Ammo.text = Inventory.instance.current_item.weapon_data._currentAmmo.ToString();
+            Magazine.text = Inventory.instance.current_item.weapon_data._magazineAmmo.ToString();
         }
         else
         {
-            ammo.text = "0";
-            magazine.text = "0";
+            Ammo.text = "0";
+            Magazine.text = "0";
         }
     }
 }

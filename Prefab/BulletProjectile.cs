@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class BulletProjectile : MonoBehaviour
 {
-    public Rigidbody rb;
+    public Rigidbody rigidBody;
+    float speed = 120f;
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        rigidBody = GetComponent<Rigidbody>();
     }
     private void Start()
     {
-        float speed = 120f;
-        rb.velocity = transform.forward * speed;
+        rigidBody.velocity = transform.forward * speed;
         StartCoroutine("callBack");
     }
     IEnumerator callBack()
     {
         yield return new WaitForSeconds(2f);
-        rb.velocity = Vector3.zero;
+        rigidBody.velocity = Vector3.zero;
         gameObject.SetActive(false);
 
     }
@@ -28,8 +28,7 @@ public class BulletProjectile : MonoBehaviour
     }
     public void resetVelo()
     {
-        rb.velocity = Vector3.zero;
-        float speed = 120f;
-        rb.velocity = transform.forward * speed;
+        rigidBody.velocity = Vector3.zero;
+        rigidBody.velocity = transform.forward * speed;
     }
 }

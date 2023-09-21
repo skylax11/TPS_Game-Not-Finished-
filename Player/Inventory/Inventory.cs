@@ -11,14 +11,14 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     [Header("Slot Items")]
-    [SerializeField] public GameObject[] slot_Images;
-    [SerializeField] public SlotItemInfos[] All_Items;
+    public GameObject[] slot_Images;
+    public SlotItemInfos[] All_Items;
     public SlotItemInfos current_item;
     public int previous_index;
     public static Inventory instance;
-    [SerializeField] public GameObject empty_GameObject;
+    public GameObject empty_GameObject;
     [Header("Weapon Parent")]
-    [SerializeField] public GameObject wepParent;
+    public GameObject wepParent;
     [Header("Raycast")]
     RaycastHit hit;
     [SerializeField] GameObject cam;
@@ -28,7 +28,7 @@ public class Inventory : MonoBehaviour
     public bool isOpen;
     [Header("TPS Controller")]
     [TypeFilter(typeof(ThirdPersonController))]
-    public ThirdPersonController tps;
+    public ThirdPersonController thirdPersonController;
 
     private void Awake()
     {
@@ -76,14 +76,14 @@ public class Inventory : MonoBehaviour
         {
            
 
-           TPSController.instance.canShoot = true;
+           TPSController.instance.CanShoot = true;
            TPSController.instance.PoseRig.weight = 1f;
            TPSController.instance.HandRig.weight = 1f;
         }
         else
         {
-           TPSController.instance.canShoot = false;
-           TPSController.instance.aimRig.weight = 0f;
+           TPSController.instance.CanShoot = false;
+           TPSController.instance.AimRig.weight = 0f;
            TPSController.instance.PoseRig.weight = 0f;
            TPSController.instance.ShootingRig.weight = 0f;
            TPSController.instance.HandRig.weight = 0f;
@@ -97,26 +97,26 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            UI_Manager.instance.ammo.text = "0";
-            UI_Manager.instance.magazine.text = "0";
+            UI_Manager.instance.Ammo.text = "0";
+            UI_Manager.instance.Magazine.text = "0";
         }
     }
     public void SetRigDetails(Quaternion[] parent, Vector3[] position,GameObject left,GameObject right, Vector3 leftHint, Vector3 rightHint)
     {
         for (int i = 0; i < item.pos_offset.Length; i++)
         {
-            TPSController.instance.position_aiming_shooting_Parent[i].gameObject.transform.localRotation = parent[i];   // Assignments for Rigs
-            TPSController.instance.position_aiming_shooting_Pos[i].data.offset = position[i];     
+            TPSController.instance.Position_aiming_shooting_Parent[i].gameObject.transform.localRotation = parent[i];   // Assignments for Rigs
+            TPSController.instance.Position_aiming_shooting_Pos[i].data.offset = position[i];     
         }
         if (item.right != null)
         {
             TPSController.instance.HandRig.GetComponentsInChildren<TwoBoneIKConstraint>()[0].data.target = right.transform;
-            TPSController.instance._rightHint.transform.localPosition = rightHint;
+            TPSController.instance.RightHint.transform.localPosition = rightHint;
         }
         if (item.left != null)
         {
             TPSController.instance.HandRig.GetComponentsInChildren<TwoBoneIKConstraint>()[1].data.target = left.transform;
-            TPSController.instance._leftHint.transform.localPosition = leftHint;
+            TPSController.instance.LeftHint.transform.localPosition = leftHint;
         }
 
         current_item.the_item.GetComponent<IWeapon>().swapWeapons();
@@ -128,8 +128,8 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < item.pos_offset.Length; i++)
         {
-            TPSController.instance.position_aiming_shooting_Parent[i].gameObject.transform.localRotation = parent[i]; 
-            TPSController.instance.position_aiming_shooting_Pos[i].data.offset = position[i];      // Assignments for Rigs
+            TPSController.instance.Position_aiming_shooting_Parent[i].gameObject.transform.localRotation = parent[i]; 
+            TPSController.instance.Position_aiming_shooting_Pos[i].data.offset = position[i];      // Assignments for Rigs
         }
 
         current_item.the_item.GetComponent<IWeapon>().swapWeapons();
@@ -139,7 +139,7 @@ public class Inventory : MonoBehaviour
     }
     public void AddItems() // RIG TRANSFORM EKLE
     {
-        if (Physics.Raycast(TPSController.instance.debugTransform.position, TPSController.instance.debugTransform.forward, out hit, 20f))
+        if (Physics.Raycast(TPSController.instance.DebugTransform.position, TPSController.instance.DebugTransform.forward, out hit, 20f))
         {
             if (hit.transform.GetComponent<IInteractable>() != null && current_item.image_2d == null)
             {

@@ -19,7 +19,7 @@ public class Sound_Manager : MonoBehaviour
     }
     public void SetClip(AudioClip clip)
     {
-       source.clip = clip;
+       source.clip = clip;  // Seste kaldýk
        source.Play();
     }
 }

@@ -218,7 +218,7 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = (_input.sprint && UI_Manager.instance.stamina.fillAmount > 0f) ? SprintSpeed : MoveSpeed;
+            float targetSpeed = (_input.sprint && UI_Manager.instance.Stamina.fillAmount > 0f) ? SprintSpeed : MoveSpeed;
             if (_input.sprint)
             {
                 UI_Manager.instance.decreaseStamina();

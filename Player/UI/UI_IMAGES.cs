@@ -10,9 +10,9 @@ public class UI_IMAGES : MonoBehaviour, IDragHandler
     [Header("Image Props")]
     public Canvas canvas;
     private RectTransform rectTransform;
-    public bool touching;
-    public bool haveDraggedEver;
-    public bool isDraggingNow;
+    public bool Touching;
+    public bool HaveDraggedEver;
+    public bool IsDraggingNow;
     public int id;
     [SerializeField] Vector2 initial_Transform;
     Collider2D detected_coll;
@@ -30,50 +30,50 @@ public class UI_IMAGES : MonoBehaviour, IDragHandler
             id = transform.GetSiblingIndex();
             Inventory.instance.slot_Images[transform.GetSiblingIndex()] = gameObject;
         }
-        touching = false;
+        Touching = false;
         rectTransform = GetComponent<RectTransform>();
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
-        touching = true;
+        Touching = true;
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        touching = true;
-        if (haveDraggedEver == false && isDraggingNow)
+        Touching = true;
+        if (HaveDraggedEver == false && IsDraggingNow)
         {
             detected_coll = collision;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        touching=false;
+        Touching =false;
     }
     public void DropUI_Element()
     {
-        if (haveDraggedEver)
+        if (HaveDraggedEver)
         {
             gameObject.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(gameObject.GetComponent<RectTransform>().anchoredPosition, initial_Transform, Time.deltaTime * 20f);
         }
     }
     public void EventTrigger_Drop()
     {
-        if (touching)
+        if (Touching)
         {
-            haveDraggedEver = false;
+            HaveDraggedEver = false;
             SetAndGetParent();
             initial_Transform = detected_coll.GetComponent<UI_IMAGES>().initial_Transform;
             detected_coll.GetComponent<UI_IMAGES>().initial_Transform = temp_vector2d;
-            isDraggingNow = false;
-            haveDraggedEver = true;
-            detected_coll.GetComponent<UI_IMAGES>().haveDraggedEver = true;
+            IsDraggingNow = false;
+            HaveDraggedEver = true;
+            detected_coll.GetComponent<UI_IMAGES>().HaveDraggedEver = true;
             SwitchItems(gameObject.transform.parent.tag, detected_coll.transform.parent.tag, id, detected_coll.transform.GetComponent<UI_IMAGES>().id);
 
         }
         else
         {
-            haveDraggedEver = true;
+            HaveDraggedEver = true;
         }
     }
     int idChecker(int currentItem_id, int swapItem_id)
@@ -141,8 +141,8 @@ public class UI_IMAGES : MonoBehaviour, IDragHandler
     }
     void IDragHandler.OnDrag(UnityEngine.EventSystems.PointerEventData eventData)
     {
-        isDraggingNow = true;
-        haveDraggedEver = false;
+        IsDraggingNow = true;
+        HaveDraggedEver = false;
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
     private void Update() => DropUI_Element();
