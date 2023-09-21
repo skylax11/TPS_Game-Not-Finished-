@@ -128,6 +128,10 @@ public class TPSController : MonoBehaviour
                 ShootingRig.weight -= Time.deltaTime * 3f;
                 PoseRig.weight += Time.deltaTime * 5f;
             }
+            if (ShootingRig.weight == 0)
+            {
+                starterAssetsInputs.reload = true;
+            }
         }
 
     }

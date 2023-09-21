@@ -23,12 +23,12 @@ public class UI_IMAGES : MonoBehaviour, IDragHandler
         if (transform.parent.tag == "Inventory")
         {
             id = 9 + transform.GetSiblingIndex();
-            Inventory.instance.slot_Images[9 + transform.GetSiblingIndex()] = gameObject;
+            Inventory.instance.Slot_Images[9 + transform.GetSiblingIndex()] = gameObject;
         }
         else
         {
             id = transform.GetSiblingIndex();
-            Inventory.instance.slot_Images[transform.GetSiblingIndex()] = gameObject;
+            Inventory.instance.Slot_Images[transform.GetSiblingIndex()] = gameObject;
         }
         Touching = false;
         rectTransform = GetComponent<RectTransform>();
@@ -91,9 +91,6 @@ public class UI_IMAGES : MonoBehaviour, IDragHandler
     public int nxt_index;
     public void SwitchItems(string my_tag, string detectedcoll_tag, int my_index, int detectedcoll_index)
     {
-        print(Inventory.instance.All_Items[my_index].id + " " + Inventory.instance.All_Items[my_index].name);
-        print(Inventory.instance.All_Items[detectedcoll_index].id + " " + Inventory.instance.All_Items[detectedcoll_index].name);
-
         SlotItemInfos temp = Inventory.instance.All_Items[my_index];
         Inventory.instance.All_Items[my_index] = Inventory.instance.All_Items[detectedcoll_index];   // SWAPPING ITEMS...
         Inventory.instance.All_Items[detectedcoll_index] = temp;
@@ -105,23 +102,12 @@ public class UI_IMAGES : MonoBehaviour, IDragHandler
         Inventory.instance.All_Items[id2].id = id2;
         Inventory.instance.All_Items[id].id = id;
 
-
-        print(Inventory.instance.All_Items[my_index].id + " " + Inventory.instance.All_Items[my_index].name);
-        print(Inventory.instance.All_Items[detectedcoll_index].id + " " + Inventory.instance.All_Items[detectedcoll_index].name);
-
-
         if (idChecker(Inventory.instance.current_item.id, Inventory.instance.All_Items[id].id) == 1)  // Runs when you dragged your current item.
         {
-            print(Inventory.instance.All_Items[id].id);
-            print(Inventory.instance.All_Items[id].name);
-
             Inventory.instance.SwitchItems(Inventory.instance.All_Items[id2].id);
         }
         else if (idChecker(Inventory.instance.current_item.id, Inventory.instance.All_Items[id2].id) == 1) // Runs when you swapped your item without dragging
         {
-            print(Inventory.instance.All_Items[id2].id);
-            print(Inventory.instance.All_Items[id2].name);
-
             Inventory.instance.SwitchItems(Inventory.instance.All_Items[id].id);
         }
         Inventory.instance.SwapIcon(id, id2);

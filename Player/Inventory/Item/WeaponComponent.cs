@@ -103,17 +103,17 @@ namespace Assets.Scripts
             All_Items[id]._reloadClip = item.info._reloadClip;
             All_Items[id]._shotClip = item.info._shotClip;
 
-            Inventory.instance.slot_Images[id].GetComponent<Image>().sprite = All_Items[id].image_2d;
+            Inventory.instance.Slot_Images[id].GetComponent<Image>().sprite = All_Items[id].image_2d;
             Inventory.instance.current_item = All_Items[id];
 
-            item.transform.parent = Inventory.instance.wepParent.transform;
+            item.transform.parent = Inventory.instance.WepParent.transform;
 
 
             item.transform.localPosition = item.info.item_Pos;  // Setting Transforms BURAYI AYARLA
             item.transform.localRotation = item.info.item_Rot;
-            Inventory.instance.wepParent.transform.position = item.info.parent_Pos;
-            Inventory.instance.wepParent.transform.rotation = item.info.parent_Rot;
-            item.transform.parent = Inventory.instance.wepParent.transform;
+            Inventory.instance.WepParent.transform.position = item.info.parent_Pos;
+            Inventory.instance.WepParent.transform.rotation = item.info.parent_Rot;
+            item.transform.parent = Inventory.instance.WepParent.transform;
 
 
 

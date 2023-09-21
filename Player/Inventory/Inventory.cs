@@ -11,14 +11,14 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     [Header("Slot Items")]
-    public GameObject[] slot_Images;
+    public GameObject[] Slot_Images;
     public SlotItemInfos[] All_Items;
     public SlotItemInfos current_item;
     public int previous_index;
     public static Inventory instance;
-    public GameObject empty_GameObject;
+    public GameObject Empty_GameObject;
     [Header("Weapon Parent")]
-    public GameObject wepParent;
+    public GameObject WepParent;
     [Header("Raycast")]
     RaycastHit hit;
     [SerializeField] GameObject cam;
@@ -52,16 +52,16 @@ public class Inventory : MonoBehaviour
         for (int i = 0; i < 37; i++)
         {
             All_Items[i] = new SlotItemInfos(i);
-            All_Items[i].the_item = empty_GameObject;
+            All_Items[i].the_item = Empty_GameObject;
             All_Items[i].id = i;
         }
         current_item = All_Items[0];
     }
     public void SwapIcon(int first, int second)
     {
-        GameObject temp = slot_Images[first];
-        slot_Images[first] = slot_Images[second];
-        slot_Images[second] = temp;
+        GameObject temp = Slot_Images[first];
+        Slot_Images[first] = Slot_Images[second];
+        Slot_Images[second] = temp;
     }
     public void SwitchItems(float index)
     {
@@ -92,8 +92,8 @@ public class Inventory : MonoBehaviour
         {
             SetRigDetails(current_item.weapon_rotation, current_item.pos_offset,current_item.left,current_item.right,current_item.leftHint,current_item.rightHint);
 
-            wepParent.transform.position = current_item.parent_Pos;
-            wepParent.transform.rotation = current_item.parent_Rot;
+            WepParent.transform.position = current_item.parent_Pos;
+            WepParent.transform.rotation = current_item.parent_Rot;
         }
         else
         {
