@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StarterAssets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,6 +135,7 @@ namespace Assets.Scripts
         #endregion
         public void swapWeapons()
         {
+            TPSController.instance.SpawnBulletTransform = Inventory.instance.current_item.the_item.GetComponent<WeaponComponent>().bulletTransform;
             UI_Manager.instance.reflectAmmo();
         }
         public void Shot(IWeapon data,Vector3 mouseWorldPos,Transform spawnBulletTransform)
@@ -168,10 +170,6 @@ namespace Assets.Scripts
         {
             Inventory.instance.current_item.the_item.GetComponent<Animator>().SetBool("reload", false);
             TPSController.instance.CanShoot = true;
-        }
-        public void SetShotAnimation_False()
-        {
-            Inventory.instance.current_item.the_item.GetComponent<Animator>().SetBool("shot", false);
         }
     }
 }

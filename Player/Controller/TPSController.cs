@@ -105,6 +105,8 @@ public class TPSController : MonoBehaviour
 
         if ((starterAssetsInputs.shoot && CanShoot) && _currentItem.weapon_data._currentAmmo > 0)
         {
+            SetReloadBool(false);
+
             ShootVirtualCam.gameObject.SetActive(true);
             Vector3 worldAimTarget = mouseWorldPos;
             worldAimTarget.y = transform.position.y;
@@ -130,9 +132,13 @@ public class TPSController : MonoBehaviour
             }
             if (ShootingRig.weight == 0)
             {
-                starterAssetsInputs.reload = true;
+                SetReloadBool(true);
             }
         }
 
+    }
+    public void SetReloadBool(bool value)
+    {
+        starterAssetsInputs.reload = value;
     }
 }
